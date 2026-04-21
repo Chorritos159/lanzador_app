@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/dashboard_screen.dart'; // Importamos tu nueva pantalla
+import 'presentation/screens/dashboard_screen.dart';
+import 'presentation/screens/bluetooth_connection_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,10 +17,10 @@ class LanzadorApp extends StatelessWidget {
       title: 'Sistema Lanzador',
       theme: ThemeData(
         brightness: Brightness.dark,
-        primaryColor: Colors.greenAccent,
-        scaffoldBackgroundColor: const Color(0xFF121212),
+        primaryColor: const Color.fromARGB(255, 23, 23, 23),
+        scaffoldBackgroundColor: const Color(0xFFF4F4F6),
       ),
-      home: const DashboardScreen(), // Aquí cargamos el Dashboard
+      home: const BluetoothConnectionScreen(),
     );
   }
 }

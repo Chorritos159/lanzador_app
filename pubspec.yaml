@@ -39,6 +39,7 @@ dependencies:
   path_provider: ^2.1.5
   csv: ^8.0.0
   share_plus: ^13.0.0
+  app_settings: ^5.1.1
 
 dev_dependencies:
   flutter_test:
