@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/dashboard_screen.dart';
 import 'presentation/screens/bluetooth_connection_screen.dart';
 
 void main() {

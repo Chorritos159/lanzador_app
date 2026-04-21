@@ -5,7 +5,7 @@ import '../../domain/seccion_model.dart';
 import '../../data/export_service.dart';
 
 class AlumnosScreen extends StatefulWidget {
-  final Seccion seccion; // Recibe el aula desde la pantalla anterior
+  final Seccion seccion;
 
   const AlumnosScreen({super.key, required this.seccion});
 
@@ -24,10 +24,10 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     _cargarAlumnos();
   }
 
-  // Carga solo los alumnos de ESTA aula
   Future<void> _cargarAlumnos() async {
     if (widget.seccion.id != null) {
-      final alumnosBD = await DatabaseHelper.instance.getAlumnosPorSeccion(widget.seccion.id!);
+      final alumnosBD = await DatabaseHelper.instance
+          .getAlumnosPorSeccion(widget.seccion.id!);
       setState(() {
         _alumnos = alumnosBD;
       });
@@ -36,13 +36,11 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
 
   Future<void> _agregarAlumno() async {
     if (_nombreController.text.isEmpty || widget.seccion.id == null) return;
-    
     final nuevoAlumno = Alumno(
-      seccionId: widget.seccion.id!, 
-      nombreCompleto: _nombreController.text
+      seccionId: widget.seccion.id!,
+      nombreCompleto: _nombreController.text,
     );
     await DatabaseHelper.instance.insertAlumno(nuevoAlumno);
-    
     _nombreController.clear();
     Navigator.pop(context);
     _cargarAlumnos();
@@ -50,36 +48,70 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
 
   Future<void> _guardarNota(Alumno alumno) async {
     if (_notaController.text.isEmpty || alumno.id == null) return;
-    
-    double? nota = double.tryParse(_notaController.text);
+    final double? nota = double.tryParse(_notaController.text);
     if (nota != null) {
       await DatabaseHelper.instance.updateNotaAlumno(alumno.id!, nota);
     }
-    
     _notaController.clear();
     Navigator.pop(context);
     _cargarAlumnos();
   }
 
-  // --- MODALES (Ventanas emergentes) ---
-
   void _mostrarDialogoNuevoAlumno() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Registrar Alumno'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Registrar alumno',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
         content: TextField(
           controller: _nombreController,
-          decoration: const InputDecoration(hintText: 'Nombre completo', hintStyle: TextStyle(color: Colors.grey)),
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Color(0xFF1A1A2E)),
+          decoration: InputDecoration(
+            hintText: 'Nombre completo',
+            hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF2563EB)),
+            ),
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent))),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Color(0xFF6B7280)),
+            ),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
             onPressed: _agregarAlumno,
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: const Text('Guardar',
+                style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -90,91 +122,209 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: Text('Evaluar a ${alumno.nombreCompleto}'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'Evaluar a ${alumno.nombreCompleto}',
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
         content: TextField(
           controller: _notaController,
-          // autofocus: true, // Hace que el teclado aparezca de inmediato
-          keyboardType: const TextInputType.numberWithOptions(decimal: true), // numeros y letras
-          decoration: const InputDecoration(
-            hintText: 'Ej. 17.5', 
-            hintStyle: TextStyle(color: Colors.grey)
+          keyboardType:
+              const TextInputType.numberWithOptions(decimal: true),
+          style: const TextStyle(color: Color(0xFF1A1A2E)),
+          decoration: InputDecoration(
+            hintText: 'Ej. 17.5',
+            hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF2563EB)),
+            ),
           ),
-          style: const TextStyle(color: Colors.white),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              _notaController.clear(); // Limpiamos la memoria si cancela
+              _notaController.clear();
               Navigator.pop(context);
-            }, 
-            child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent))
+            },
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Color(0xFF6B7280)),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
             onPressed: () => _guardarNota(alumno),
-            child: const Text('Asignar Nota', style: TextStyle(color: Colors.white)),
+            child: const Text('Asignar nota',
+                style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
     );
   }
-  
-@override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text('Clase: ${widget.seccion.nombre}'),
-        backgroundColor: Colors.black,
+        title: Text(
+          widget.seccion.nombre,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF1A1A2E)),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: const Color(0xFFE5E7EB)),
+        ),
         actions: [
-          // --- BOTÓN DE COMPARTIR ---
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.greenAccent),
+            icon: const Icon(Icons.ios_share_outlined, color: Color(0xFF2563EB)),
             onPressed: () async {
-              if (_alumnos.isEmpty) return; // Si no hay alumnos, no hace nada
+              if (_alumnos.isEmpty) return;
               await ExportService.exportarYCompartir(widget.seccion, _alumnos);
             },
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
         ],
       ),
       body: _alumnos.isEmpty
-          ? const Center(child: Text('Sin alumnos. Registra uno nuevo.', style: TextStyle(color: Colors.grey, fontSize: 16)))
-          : SingleChildScrollView(
-              scrollDirection: Axis.horizontal, // Permite deslizar si la tabla crece
-              child: SingleChildScrollView(
-                child: DataTable(
-                  headingRowColor: MaterialStateProperty.all(Colors.grey[900]),
-                  columns: const [
-                    DataColumn(label: Text('ALUMNO', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                    DataColumn(label: Text('NOTA', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                    DataColumn(label: Text('ACCIÓN', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-                  ],
-                  rows: _alumnos.map((alumno) {
-                    final tieneNota = alumno.notaRendimiento != null;
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(alumno.nombreCompleto, style: const TextStyle(color: Colors.white))),
-                        DataCell(Text(
-                          tieneNota ? alumno.notaRendimiento.toString() : '-',
-                          style: TextStyle(color: tieneNota ? Colors.greenAccent : Colors.grey, fontWeight: FontWeight.bold, fontSize: 16),
-                        )),
-                        DataCell(
-                          IconButton(
-                            icon: const Icon(Icons.edit_note, color: Colors.blueAccent),
-                            onPressed: () => _mostrarDialogoNota(alumno),
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.people_outline,
+                      size: 56, color: const Color(0xFFD1D5DB)),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Sin alumnos registrados',
+                    style: TextStyle(
+                      color: Color(0xFF9CA3AF),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Toca + para agregar uno nuevo',
+                    style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 13),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              itemCount: _alumnos.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final alumno = _alumnos[index];
+                final tieneNota = alumno.notaRendimiento != null;
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEFF6FF),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            alumno.nombreCompleto
+                                .substring(0, 1)
+                                .toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFF2563EB),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
-                      ],
-                    );
-                  }).toList(),
-                ),
-              ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              alumno.nombreCompleto,
+                              style: const TextStyle(
+                                color: Color(0xFF1A1A2E),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              tieneNota
+                                  ? 'Nota: ${alumno.notaRendimiento}'
+                                  : 'Sin nota asignada',
+                              style: TextStyle(
+                                color: tieneNota
+                                    ? const Color(0xFF16A34A)
+                                    : const Color(0xFF9CA3AF),
+                                fontSize: 13,
+                                fontWeight: tieneNota
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined,
+                            color: Color(0xFF2563EB), size: 22),
+                        onPressed: () => _mostrarDialogoNota(alumno),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: const Color(0xFF2563EB),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         onPressed: _mostrarDialogoNuevoAlumno,
-        child: const Icon(Icons.person_add, color: Colors.black),
+        child: const Icon(Icons.person_add_outlined),
       ),
     );
   }

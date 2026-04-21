@@ -20,7 +20,6 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     _cargarSecciones();
   }
 
-  // Leer la base de datos
   Future<void> _cargarSecciones() async {
     final seccionesBD = await DatabaseHelper.instance.getSecciones();
     setState(() {
@@ -28,42 +27,70 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     });
   }
 
-  // Insertar en la base de datos
   Future<void> _agregarSeccion() async {
     if (_nombreController.text.isEmpty) return;
-    
     final nuevaSeccion = Seccion(nombre: _nombreController.text);
     await DatabaseHelper.instance.insertSeccion(nuevaSeccion);
-    
     _nombreController.clear();
-    Navigator.pop(context); // Cierra el modal
-    _cargarSecciones(); // Recarga la lista
+    Navigator.pop(context);
+    _cargarSecciones();
   }
 
-  // Modal para escribir el nombre del aula
   void _mostrarDialogoNuevaSeccion() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Colors.grey[900],
-        title: const Text('Nueva Aula'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Nueva aula',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
         content: TextField(
           controller: _nombreController,
-          decoration: const InputDecoration(
+          style: const TextStyle(color: Color(0xFF1A1A2E)),
+          decoration: InputDecoration(
             hintText: 'Ej. 3ro A - Secundaria',
-            hintStyle: TextStyle(color: Colors.grey),
+            hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF2563EB)),
+            ),
           ),
-          style: const TextStyle(color: Colors.white),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent)),
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(color: Color(0xFF6B7280)),
+            ),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
             onPressed: _agregarSeccion,
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: const Text('Guardar',
+                style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -73,39 +100,114 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Mis Aulas'),
-        backgroundColor: Colors.black,
+        title: const Text(
+          'Mis Aulas',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Color(0xFF1A1A2E)),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: const Color(0xFFE5E7EB)),
+        ),
       ),
       body: _secciones.isEmpty
-          ? const Center(child: Text('No hay aulas registradas. ¡Agrega una!', style: TextStyle(color: Colors.grey, fontSize: 16)))
-          : ListView.builder(
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.class_outlined,
+                      size: 56, color: Color(0xFFD1D5DB)),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Sin aulas registradas',
+                    style: TextStyle(
+                      color: Color(0xFF9CA3AF),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Toca + para agregar una nueva',
+                    style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 13),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               itemCount: _secciones.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final seccion = _secciones[index];
-                return Card(
-                  color: Colors.grey[850],
-                  margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  child: ListTile(
-                    leading: const Icon(Icons.class_, color: Colors.blueAccent),
-                    title: Text(seccion.nombre, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                    trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-                    onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AlumnosScreen(seccion: seccion),
-                                  ),
-                                );
-                              },
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AlumnosScreen(seccion: seccion),
+                    ),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEFF6FF),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.class_outlined,
+                            color: Color(0xFF2563EB),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            seccion.nombre,
+                            style: const TextStyle(
+                              color: Color(0xFF1A1A2E),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: Color(0xFF9CA3AF),
+                          size: 22,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: const Color(0xFF2563EB),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         onPressed: _mostrarDialogoNuevaSeccion,
-        child: const Icon(Icons.add, color: Colors.black),
+        child: const Icon(Icons.add),
       ),
     );
   }
