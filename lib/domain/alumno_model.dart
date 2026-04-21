@@ -1,16 +1,26 @@
 class Alumno {
   final int? id;
-  final int seccionId; // Para saber a qué aula pertenece
-  final String nombreCompleto;
-  final double? notaRendimiento; // Puede ser nulo si el profesor aún no lo evalúa
+  final int seccionId;
+  final String nombre;
+  final String apellido;
+  final double? notaRendimiento;
 
-  Alumno({this.id, required this.seccionId, required this.nombreCompleto, this.notaRendimiento});
+  Alumno({
+    this.id,
+    required this.seccionId,
+    required this.nombre,
+    required this.apellido,
+    this.notaRendimiento,
+  });
+
+  String get nombreCompleto => '$nombre $apellido';
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'seccionId': seccionId,
-      'nombreCompleto': nombreCompleto,
+      'nombre': nombre,
+      'apellido': apellido,
       'notaRendimiento': notaRendimiento,
     };
   }
@@ -19,7 +29,8 @@ class Alumno {
     return Alumno(
       id: map['id'],
       seccionId: map['seccionId'],
-      nombreCompleto: map['nombreCompleto'],
+      nombre: map['nombre'] as String? ?? map['nombreCompleto'] as String? ?? '',
+      apellido: map['apellido'] as String? ?? '',
       notaRendimiento: map['notaRendimiento'],
     );
   }

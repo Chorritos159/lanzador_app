@@ -32,8 +32,81 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     final nuevaSeccion = Seccion(nombre: _nombreController.text);
     await DatabaseHelper.instance.insertSeccion(nuevaSeccion);
     _nombreController.clear();
+    if (!mounted) return;
     Navigator.pop(context);
     _cargarSecciones();
+  }
+
+  Future<void> _editarSeccion(Seccion seccion) async {
+    _nombreController.text = seccion.nombre;
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Editar aula',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
+        content: TextField(
+          controller: _nombreController,
+          autofocus: true,
+          style: const TextStyle(color: Color(0xFF1A1A2E)),
+          decoration: InputDecoration(
+            hintText: 'Ej. 3ro A - Secundaria',
+            hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+            filled: true,
+            fillColor: const Color(0xFFF8F9FA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF2563EB)),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar',
+                style: TextStyle(color: Color(0xFF6B7280))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2563EB),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            onPressed: () async {
+              if (_nombreController.text.trim().isEmpty) return;
+              final navigator = Navigator.of(context);
+              await DatabaseHelper.instance.updateSeccion(
+                Seccion(id: seccion.id, nombre: _nombreController.text.trim()),
+              );
+              _nombreController.clear();
+              navigator.pop();
+              if (!mounted) return;
+              _cargarSecciones();
+            },
+            child: const Text('Guardar',
+                style: TextStyle(fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+    _nombreController.clear();
   }
 
   void _mostrarDialogoNuevaSeccion() {
@@ -146,7 +219,7 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               itemCount: _secciones.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final seccion = _secciones[index];
                 return GestureDetector(
@@ -189,6 +262,12 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
                               fontSize: 15,
                             ),
                           ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit_outlined,
+                              color: Color(0xFF6B7280), size: 20),
+                          tooltip: 'Editar nombre',
+                          onPressed: () => _editarSeccion(seccion),
                         ),
                         const Icon(
                           Icons.chevron_right,
