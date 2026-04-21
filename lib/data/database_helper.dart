@@ -88,4 +88,17 @@ class DatabaseHelper {
     final result = await db.query('notas', where: 'alumnoId = ?', whereArgs: [alumnoId]);
     return result.map((json) => Nota.fromMap(json)).toList();
   }
+  Future<void> insertarAlumnosMasivo(int seccionId, List<String> nombres) async {
+  final db = await instance.database;
+  await db.transaction((txn) async {
+    for (var nombre in nombres) {
+      if (nombre.trim().isNotEmpty) {
+        await txn.insert('alumnos', {
+          'seccionId': seccionId,
+          'nombreCompleto': nombre.trim(),
+        });
+      }
+    }
+  });
+}
 }

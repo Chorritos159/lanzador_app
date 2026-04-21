@@ -51,6 +51,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     }
   }
 
+  // --- LÓGICA DE GUARDADO ---
   Future<void> _agregarAlumno() async {
     if (_nombreController.text.isEmpty || widget.seccion.id == null) return;
     
@@ -81,6 +82,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     _cargarAlumnos();
   }
 
+  // --- MODALES (INTERFAZ EMERGENTE) ---
   void _mostrarDialogoNuevoAlumno() {
     showDialog(
       context: context,
@@ -104,9 +106,41 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     );
   }
 
-  // MAGIA UX: Agregamos el parámetro opcional "evaluacionExistente"
+  void _mostrarDialogoCargaMasiva() {
+    final TextEditingController bulkController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text('Importación Masiva', style: TextStyle(color: Colors.white)),
+        content: TextField(
+          controller: bulkController,
+          maxLines: 10,
+          decoration: const InputDecoration(
+            hintText: 'Pega aquí la lista de alumnos\n(Un nombre por línea)',
+            hintStyle: TextStyle(color: Colors.grey),
+            border: OutlineInputBorder(),
+          ),
+          style: const TextStyle(color: Colors.white),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
+            onPressed: () async {
+              List<String> nombres = bulkController.text.split('\n');
+              await DatabaseHelper.instance.insertarAlumnosMasivo(widget.seccion.id!, nombres);
+              Navigator.pop(context);
+              _cargarAlumnos(); // Refresca la tabla automáticamente
+            },
+            child: const Text('Importar Ahora', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _mostrarDialogoNota(Alumno alumno, {String? evaluacionExistente}) {
-    // Si pasamos una columna que ya existe, la ponemos en el texto
     if (evaluacionExistente != null) {
       _evaluacionController.text = evaluacionExistente;
     } else {
@@ -124,14 +158,12 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
           children: [
             TextField(
               controller: _evaluacionController,
-              // Si la columna ya existe, BLOQUEAMOS el texto para evitar errores de escritura
               enabled: evaluacionExistente == null, 
               decoration: InputDecoration(
                 labelText: 'Nombre Eval.', 
                 hintText: 'Ej: Práctica 1', 
                 labelStyle: const TextStyle(color: Colors.blueAccent),
                 hintStyle: const TextStyle(color: Colors.grey),
-                // Cambiamos el color de fondo si está bloqueado
                 filled: evaluacionExistente != null,
                 fillColor: evaluacionExistente != null ? Colors.grey[800] : Colors.transparent,
               ),
@@ -140,7 +172,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
             const SizedBox(height: 15),
             TextField(
               controller: _notaController,
-              autofocus: true, // Ponemos el foco directo en la nota
+              autofocus: true, 
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: const InputDecoration(labelText: 'Nota (Ej: 18.5)', labelStyle: TextStyle(color: Colors.blueAccent)),
               style: const TextStyle(color: Colors.white),
@@ -166,7 +198,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     );
   }
 
-  // Nuevo helper que devuelve el objeto Nota completo o null
+  // --- HELPER VISUAL ---
   Nota? _obtenerNota(List<Nota> notas, String columna) {
     for (var n in notas) {
       if (n.nombreEvaluacion == columna) return n;
@@ -176,17 +208,24 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Calculamos el ancho de la pantalla para la responsividad
     final double anchoPantalla = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.black, // Fondo negro para que no queden bordes blancos al girar
+      backgroundColor: Colors.black, 
       appBar: AppBar(
         title: Text('Clase: ${widget.seccion.nombre}'),
         backgroundColor: Colors.grey[900],
         actions: [
+          // BOTÓN 1: Importación Masiva (Pegar Lista)
+          IconButton(
+            icon: const Icon(Icons.group_add, color: Colors.blueAccent),
+            tooltip: 'Importar Lista de Alumnos',
+            onPressed: _mostrarDialogoCargaMasiva,
+          ),
+          // BOTÓN 2: Exportar a Excel / WhatsApp
           IconButton(
             icon: const Icon(Icons.share, color: Colors.greenAccent),
+            tooltip: 'Exportar Notas',
             onPressed: () async {
               if (_alumnos.isEmpty) return;
               await ExportService.exportarYCompartir(widget.seccion, _alumnos, _columnasEvaluacion, _notasPorAlumno);
@@ -196,11 +235,24 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
         ],
       ),
       body: _alumnos.isEmpty
-          ? const Center(child: Text('Sin alumnos. Registra uno nuevo.', style: TextStyle(color: Colors.grey, fontSize: 16)))
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Aula vacía.', style: TextStyle(color: Colors.grey, fontSize: 18)),
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[800]),
+                    icon: const Icon(Icons.content_paste, color: Colors.blueAccent),
+                    label: const Text('Pegar lista de alumnos', style: TextStyle(color: Colors.white)),
+                    onPressed: _mostrarDialogoCargaMasiva,
+                  )
+                ],
+              ),
+            )
           : SingleChildScrollView(
               scrollDirection: Axis.horizontal, 
               child: ConstrainedBox(
-                // RESPONSIVIDAD: Obliga a la tabla a ocupar como mínimo el 100% del ancho de la pantalla
                 constraints: BoxConstraints(minWidth: anchoPantalla),
                 child: SingleChildScrollView(
                   child: DataTable(
@@ -215,17 +267,13 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
                       return DataRow(
                         cells: [
                           DataCell(Text(alumno.nombreCompleto, style: const TextStyle(color: Colors.white))),
-                          
-                          // MAGIA UX: Pintamos la nota, o pintamos un botón de "+" en esa misma columna
                           ..._columnasEvaluacion.map((col) {
                             final notaObj = _obtenerNota(notasAlumno, col);
                             if (notaObj != null) {
-                              // Si ya tiene nota, la mostramos en verde
                               return DataCell(
                                 Text(notaObj.valor.toString(), style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 16))
                               );
                             } else {
-                              // Si NO tiene nota, mostramos un botón "+" sutil que abrirá el modal con el nombre bloqueado
                               return DataCell(
                                 InkWell(
                                   onTap: () => _mostrarDialogoNota(alumno, evaluacionExistente: col),
@@ -234,12 +282,10 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
                               );
                             }
                           }),
-
-                          // Botón para crear una columna TOTALMENTE NUEVA
                           DataCell(
                             IconButton(
                               icon: const Icon(Icons.add_box, color: Colors.blueAccent),
-                              onPressed: () => _mostrarDialogoNota(alumno), // Sin pasar columna
+                              onPressed: () => _mostrarDialogoNota(alumno), 
                             ),
                           ),
                         ],
@@ -251,6 +297,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.greenAccent,
+        tooltip: 'Añadir un solo alumno',
         onPressed: _mostrarDialogoNuevoAlumno,
         child: const Icon(Icons.person_add, color: Colors.black),
       ),
