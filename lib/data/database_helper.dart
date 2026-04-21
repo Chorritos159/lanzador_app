@@ -85,3 +85,4 @@ class DatabaseHelper {
     return await db.update('alumnos', {'notaRendimiento': nota}, where: 'id = ?', whereArgs: [id]);
   }
 }
+
