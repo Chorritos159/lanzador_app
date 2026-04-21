@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'secciones_screen.dart';
-import 'bluetooth_connection_screen.dart';
+import 'verificacion_conexion_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -12,18 +12,13 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   double _velocidad = 5.0;
   String _modoActivo = 'Fútbol';
-  String _logMensaje = 'Esperando conexión...';
 
   void _enviarComandoLanzamiento() {
-    setState(() {
-      _logMensaje =
-          'Enviando Comando -> Modo: $_modoActivo | Vel: ${_velocidad.toInt()}';
-    });
+    // TODO: integrar petición HTTP al ESP32
   }
 
   void _activarParadaEmergencia() {
     setState(() {
-      _logMensaje = 'PARADA DE EMERGENCIA ACTIVADA';
       _velocidad = 1.0;
     });
   }
@@ -61,12 +56,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.bluetooth, color: Color(0xFF2563EB)),
+            icon: const Icon(Icons.wifi, color: Color(0xFF2563EB)),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (_) => const BluetoothConnectionScreen()),
+                    builder: (_) => const VerificacionConexionScreen()),
               );
             },
           ),

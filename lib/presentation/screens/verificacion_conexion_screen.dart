@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:app_settings/app_settings.dart';
 import 'dashboard_screen.dart';
 
-class BluetoothConnectionScreen extends StatelessWidget {
-  const BluetoothConnectionScreen({super.key});
+class VerificacionConexionScreen extends StatelessWidget {
+  const VerificacionConexionScreen({super.key});
 
-  void _openBluetoothSettings() {
-    AppSettings.openAppSettings(type: AppSettingsType.bluetooth);
+  void _openWifiSettings() {
+    AppSettings.openAppSettings(type: AppSettingsType.wifi);
   }
 
   void _goToDashboard(BuildContext context) {
@@ -65,26 +65,19 @@ class BluetoothConnectionScreen extends StatelessWidget {
 
               const SizedBox(height: 48),
 
-              // Bluetooth circle button
+              // WiFi circle button
               GestureDetector(
                 onTap: () => _goToDashboard(context),
                 child: Container(
                   width: 160,
                   height: 160,
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 205, 205, 206),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE5E7EB),
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromARGB(255, 225, 223, 223).withOpacity(0.30),
-                        blurRadius: 40,
-                        spreadRadius: 8,
-                      ),
-                    ],
                   ),
                   child: const Icon(
-                    Icons.bluetooth,
-                    color: Colors.white,
+                    Icons.wifi_off_rounded,
+                    color: Color(0xFF9CA3AF),
                     size: 72,
                   ),
                 ),
@@ -94,7 +87,7 @@ class BluetoothConnectionScreen extends StatelessWidget {
 
               // Title
               const Text(
-                'Verifica tu conexión',
+                'Sin conexión a internet',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF1A1A2E),
@@ -107,7 +100,7 @@ class BluetoothConnectionScreen extends StatelessWidget {
 
               // Description
               const Text(
-                'No se detecta conexión con el dispositivo vía Bluetooth. Por favor, enciende el dispositivo y conéctate para continuar.',
+                'No se detecta conexión a internet. Por favor, activa el Wi-Fi y verifica la conexión del dispositivo para continuar.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF6B7280),
@@ -123,14 +116,14 @@ class BluetoothConnectionScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton.icon(
-                  onPressed: _openBluetoothSettings,
+                  onPressed: _openWifiSettings,
                   icon: const Icon(
-                    Icons.bluetooth_searching,
+                    Icons.wifi_find,
                     color: Colors.white,
                     size: 22,
                   ),
                   label: const Text(
-                    'Buscar dispositivo',
+                    'Abrir ajustes de Wi-Fi',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -175,7 +168,7 @@ class BluetoothConnectionScreen extends StatelessWidget {
                                 'Asegúrate de que el ',
                           ),
                           TextSpan(
-                            text: 'Bluetooth',
+                            text: 'Wi-Fi',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               color: Color(0xFF6B7280),
@@ -183,7 +176,7 @@ class BluetoothConnectionScreen extends StatelessWidget {
                           ),
                           TextSpan(
                             text:
-                                ' esté activado en tu teléfono y de que el dispositivo se encuentre cerca.',
+                                ' o los datos móviles estén activados en tu teléfono.',
                           ),
                         ],
                       ),

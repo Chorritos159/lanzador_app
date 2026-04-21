@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/bluetooth_connection_screen.dart';
+import 'presentation/screens/verificacion_conexion_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,7 @@ class LanzadorApp extends StatelessWidget {
         primaryColor: const Color.fromARGB(255, 23, 23, 23),
         scaffoldBackgroundColor: const Color(0xFFF4F4F6),
       ),
-      home: const BluetoothConnectionScreen(),
+      home: const VerificacionConexionScreen(),
     );
   }
 }
