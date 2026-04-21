@@ -17,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String _estadoConexion = 'Esperando conexión Wi-Fi con el Lanzador...';
   bool _estaCargando = false; // Para evitar que el profesor presione el botón 100 veces seguidas
   IconData? _iconoEstado;
-  Color _colorIconoEstado = Colors.greenAccent;
+  Color _colorIconoEstado = const Color.fromARGB(255, 95, 103, 99);
 
   // --- LÓGICA DE RED (HABLAR CON EL ESP32) ---
   Future<void> _ejecutarLanzamiento() async {
@@ -96,7 +96,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 10),
-              
+
+              // --- LOGO INSTITUCIÓN ---
+              Center(
+                child: Image.asset(
+                  'assets/images/logoexitus.png',
+                  height: 160,
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               // --- BOTONES DE DEPORTE ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -109,23 +120,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 40),
 
               // --- SLIDER DE POTENCIA ---
-              Text(
-                'Potencia del Motor: ${_potencia.toInt()}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Slider(
-                value: _potencia,
-                min: 1,
-                max: 10,
-                divisions: 9,
-                activeColor: Colors.greenAccent,
-                inactiveColor: Colors.grey[800],
-                onChanged: (valor) {
-                  setState(() {
-                    _potencia = valor;
-                  });
-                },
+              Card(
+                color: Colors.grey[900],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Potencia del Motor',
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3B82F6),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${_potencia.toInt()} / 10',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Slider(
+                        value: _potencia,
+                        min: 1,
+                        max: 10,
+                        divisions: 9,
+                        activeColor: const Color(0xFF3B82F6),
+                        inactiveColor: Colors.grey[700],
+                        thumbColor: Colors.white,
+                        onChanged: (valor) {
+                          setState(() {
+                            _potencia = valor;
+                          });
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Mín', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                          Text('Máx', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -224,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         decoration: BoxDecoration(
-          color: seleccionado ? Colors.greenAccent : Colors.grey[850],
+          color: seleccionado ? const Color.fromARGB(255, 59, 130, 246) : Colors.grey[850],
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
