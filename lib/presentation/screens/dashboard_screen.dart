@@ -16,12 +16,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   double _potencia = 5.0;
   String _estadoConexion = 'Esperando conexión Wi-Fi con el Lanzador...';
   bool _estaCargando = false; // Para evitar que el profesor presione el botón 100 veces seguidas
+  IconData? _iconoEstado;
+  Color _colorIconoEstado = Colors.greenAccent;
 
   // --- LÓGICA DE RED (HABLAR CON EL ESP32) ---
   Future<void> _ejecutarLanzamiento() async {
     setState(() {
       _estadoConexion = 'Enviando comando de lanzamiento...';
       _estaCargando = true;
+      _iconoEstado = null;
     });
     
     // Aquí la app se pausa unos segundos esperando al ESP32
@@ -30,9 +33,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _estaCargando = false;
       if (exito) {
-        _estadoConexion = '✅ ¡Lanzamiento en curso! ($_deporteSeleccionado - Potencia ${_potencia.toInt()})';
+        _estadoConexion = '¡Lanzamiento en curso! ($_deporteSeleccionado - Potencia ${_potencia.toInt()})';
+        _iconoEstado = Icons.check_circle_outline;
+        _colorIconoEstado = Colors.greenAccent;
       } else {
-        _estadoConexion = '❌ Error: No se pudo conectar. Verifica que estés conectado al Wi-Fi del Lanzador.';
+        _estadoConexion = 'Error: No se pudo conectar. Verifica que estés conectado al Wi-Fi del Lanzador.';
+        _iconoEstado = Icons.wifi_off;
+        _colorIconoEstado = Colors.redAccent;
       }
     });
   }
@@ -41,6 +48,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _estadoConexion = 'Intentando detener motores...';
       _estaCargando = true;
+      _iconoEstado = null;
     });
 
     bool exito = await LanzadorService.detenerMotores();
@@ -48,9 +56,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _estaCargando = false;
       if (exito) {
-        _estadoConexion = '🛑 MOTORES DETENIDOS POR SEGURIDAD';
+        _estadoConexion = 'MOTORES DETENIDOS POR SEGURIDAD';
+        _iconoEstado = Icons.stop_circle_outlined;
+        _colorIconoEstado = Colors.greenAccent;
       } else {
-        _estadoConexion = '⚠️ FALLO AL DETENER: ¡Si la máquina sigue moviéndose, corta la energía manual!';
+        _estadoConexion = 'FALLO AL DETENER: ¡Si la máquina sigue moviéndose, corta la energía manual!';
+        _iconoEstado = Icons.warning_amber_rounded;
+        _colorIconoEstado = Colors.redAccent;
       }
     });
   }
@@ -133,10 +145,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 child: Row(
                   children: [
-                    if (_estaCargando) 
+                    if (_estaCargando)
                       const Padding(
                         padding: EdgeInsets.only(right: 15),
                         child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.orangeAccent, strokeWidth: 2)),
+                      ),
+                    if (!_estaCargando && _iconoEstado != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Icon(_iconoEstado, color: _colorIconoEstado, size: 22),
                       ),
                     Expanded(
                       child: Text(
