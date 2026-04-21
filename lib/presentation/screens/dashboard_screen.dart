@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'secciones_screen.dart'; 
+// Importamos la pantalla de alumnos y el servicio del hardware
+import 'alumnos_screen.dart';
+import 'secciones_screen.dart'; // Asegúrate de tener este archivo para navegar a las clases
+import '../../data/lanzador_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -9,22 +12,64 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  // Variables de estado listas para enviar al ESP32
+  // Variables de estado
   String _deporteSeleccionado = 'Fútbol';
   double _potencia = 5.0;
-  String _estadoConexion = 'Esperando conexión...';
+  String _estadoConexion = 'Esperando conexión Wi-Fi con el Lanzador...';
+  bool _estaCargando = false; // Para evitar que el profesor presione el botón 100 veces seguidas
 
+  // --- LÓGICA DE RED (HABLAR CON EL ESP32) ---
+  Future<void> _ejecutarLanzamiento() async {
+    setState(() {
+      _estadoConexion = 'Enviando comando de lanzamiento...';
+      _estaCargando = true;
+    });
+    
+    // Aquí la app se pausa unos segundos esperando al ESP32
+    bool exito = await LanzadorService.iniciarLanzamiento(_deporteSeleccionado, _potencia);
+    
+    setState(() {
+      _estaCargando = false;
+      if (exito) {
+        _estadoConexion = '✅ ¡Lanzamiento en curso! ($_deporteSeleccionado - Potencia ${_potencia.toInt()})';
+      } else {
+        _estadoConexion = '❌ Error: No se pudo conectar. Verifica que estés conectado al Wi-Fi del Lanzador.';
+      }
+    });
+  }
+
+  Future<void> _detenerMotores() async {
+    setState(() {
+      _estadoConexion = 'Intentando detener motores...';
+      _estaCargando = true;
+    });
+
+    bool exito = await LanzadorService.detenerMotores();
+    
+    setState(() {
+      _estaCargando = false;
+      if (exito) {
+        _estadoConexion = '🛑 MOTORES DETENIDOS POR SEGURIDAD';
+      } else {
+        _estadoConexion = '⚠️ FALLO AL DETENER: ¡Si la máquina sigue moviéndose, corta la energía manual!';
+      }
+    });
+  }
+
+  // --- INTERFAZ VISUAL ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: const Text('Control de Lanzador', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.grey[900],
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
+          // Botón para ir a la gestión de alumnos
           IconButton(
-            icon: const Icon(Icons.people),
+            icon: const Icon(Icons.people, color: Colors.blueAccent),
+            tooltip: 'Gestión de Aulas',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const SeccionesScreen()));
             },
@@ -33,7 +78,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(width: 15),
         ],
       ),
-      //PERMITE GIRAR EL CELULAR
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -75,17 +119,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 30),
 
-              // --- ESTADO DE CONEXIÓN ---
+              // --- PANTALLA DE ESTADO ---
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.black,
-                  border: Border.all(color: Colors.greenAccent.withOpacity(0.5)),
+                  border: Border.all(
+                    // Si hay error se pone rojo, si está cargando naranja, si no verde
+                    color: _estadoConexion.contains('Error') || _estadoConexion.contains('FALLO') 
+                        ? Colors.redAccent 
+                        : (_estaCargando ? Colors.orangeAccent : Colors.greenAccent)
+                  ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  _estadoConexion,
-                  style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace'),
+                child: Row(
+                  children: [
+                    if (_estaCargando) 
+                      const Padding(
+                        padding: EdgeInsets.only(right: 15),
+                        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.orangeAccent, strokeWidth: 2)),
+                      ),
+                    Expanded(
+                      child: Text(
+                        _estadoConexion,
+                        style: TextStyle(
+                          color: _estadoConexion.contains('Error') || _estadoConexion.contains('FALLO') 
+                              ? Colors.redAccent 
+                              : Colors.greenAccent, 
+                          fontFamily: 'monospace'
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -97,13 +162,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   backgroundColor: Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  // Desactivamos el botón si ya está enviando una petición
+                  disabledBackgroundColor: Colors.blueAccent.withOpacity(0.5),
                 ),
-                onPressed: () {
-                  // TODO: Aquí pondremos la petición HTTP POST al ESP32
-                  setState(() {
-                    _estadoConexion = 'Enviando comando de lanzamiento...';
-                  });
-                },
+                onPressed: _estaCargando ? null : _ejecutarLanzamiento,
                 child: const Text(
                   'INICIAR LANZAMIENTO',
                   style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
@@ -118,20 +180,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   backgroundColor: Colors.redAccent,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  disabledBackgroundColor: Colors.redAccent.withOpacity(0.5),
                 ),
-                onPressed: () {
-                  // TODO: Petición HTTP POST de emergencia para apagar motores
-                  setState(() {
-                    _estadoConexion = '¡MOTORES DETENIDOS!';
-                  });
-                },
+                onPressed: _estaCargando ? null : _detenerMotores,
                 child: const Text(
                   'PARADA DE EMERGENCIA',
                   style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
               
-              const SizedBox(height: 40), // Espacio extra al final para que el scroll sea cómodo
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -139,7 +197,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // Helper visual para los botones de Fútbol y Vóley
   Widget _buildBotonDeporte(String nombre, IconData icono) {
     bool seleccionado = _deporteSeleccionado == nombre;
     return GestureDetector(
