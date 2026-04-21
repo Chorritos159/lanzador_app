@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-// Importamos la pantalla de alumnos y el servicio del hardware
 import 'alumnos_screen.dart';
-import 'secciones_screen.dart'; // Asegúrate de tener este archivo para navegar a las clases
+import 'secciones_screen.dart'; 
 import '../../data/lanzador_service.dart';
 
 class DashboardScreen extends StatefulWidget {
