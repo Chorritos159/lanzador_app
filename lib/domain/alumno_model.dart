@@ -23,7 +23,7 @@ class Alumno {
       notaRendimiento: map['notaRendimiento'],
     );
   }
-}
+}  
   
 
     
