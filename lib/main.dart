@@ -16,7 +16,7 @@ class LanzadorApp extends StatelessWidget {
       title: 'Sistema Lanzador',
       theme: ThemeData(
         brightness: Brightness.dark,
-        primaryColor: Colors.greenAccent,
+        primaryColor:  const Color(0xFF121212),
         scaffoldBackgroundColor: const Color(0xFF121212),
       ),
       home: const DashboardScreen(),

@@ -58,9 +58,9 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
             child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
             onPressed: _agregarSeccion,
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -100,9 +100,9 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.blueAccent,
         onPressed: _mostrarDialogoNuevaSeccion,
-        child: const Icon(Icons.add, color: Colors.black),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

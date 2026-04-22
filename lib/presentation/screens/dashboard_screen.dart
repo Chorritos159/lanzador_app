@@ -33,7 +33,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (exito) {
         _estadoConexion = '¡Lanzamiento en curso! ($_deporteSeleccionado - Potencia ${_potencia.toInt()})';
         _iconoEstado = Icons.check_circle_outline;
-        _colorIconoEstado = Colors.greenAccent;
+        _colorIconoEstado = Colors.blueAccent;
       } else {
         _estadoConexion = 'Error: No se pudo conectar. Verifica que estés conectado al Wi-Fi del Lanzador.';
         _iconoEstado = Icons.wifi_off;
@@ -56,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (exito) {
         _estadoConexion = 'MOTORES DETENIDOS POR SEGURIDAD';
         _iconoEstado = Icons.stop_circle_outlined;
-        _colorIconoEstado = Colors.greenAccent;
+        _colorIconoEstado = Colors.white70;
       } else {
         _estadoConexion = 'FALLO AL DETENER: ¡Si la máquina sigue moviéndose, corta la energía manual!';
         _iconoEstado = Icons.warning_amber_rounded;
@@ -81,7 +81,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const SeccionesScreen()));
             },
           ),
-          const Icon(Icons.wifi, color: Colors.greenAccent),
+          const Icon(Icons.wifi, color: Colors.white70),
           const SizedBox(width: 15),
         ],
       ),
@@ -176,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   border: Border.all(
                     color: _estadoConexion.contains('Error') || _estadoConexion.contains('FALLO') 
                         ? Colors.redAccent 
-                        : (_estaCargando ? Colors.orangeAccent : Colors.greenAccent)
+                        : (_estaCargando ? Colors.orangeAccent : Colors.blueAccent)
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -198,7 +198,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         style: TextStyle(
                           color: _estadoConexion.contains('Error') || _estadoConexion.contains('FALLO') 
                               ? Colors.redAccent 
-                              : Colors.greenAccent, 
+                              : Colors.white, 
                           fontFamily: 'monospace'
                         ),
                       ),

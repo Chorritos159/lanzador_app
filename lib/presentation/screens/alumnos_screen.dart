@@ -95,9 +95,9 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar', style: TextStyle(color: Colors.redAccent))),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
             onPressed: _agregarAlumno,
-            child: const Text('Guardar', style: TextStyle(color: Colors.black)),
+            child: const Text('Guardar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -219,7 +219,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
             onPressed: _mostrarDialogoCargaMasiva,
           ),
           IconButton(
-            icon: const Icon(Icons.share, color: Colors.greenAccent),
+            icon: const Icon(Icons.share, color: Colors.blueAccent),
             tooltip: 'Exportar Notas',
             onPressed: () async {
               if (_alumnos.isEmpty) return;
@@ -266,7 +266,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
                             final notaObj = _obtenerNota(notasAlumno, col);
                             if (notaObj != null) {
                               return DataCell(
-                                Text(notaObj.valor.toString(), style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 16))
+                                Text(notaObj.valor.toString(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))
                               );
                             } else {
                               return DataCell(
@@ -291,10 +291,10 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.blueAccent,
         tooltip: 'Añadir un solo alumno',
         onPressed: _mostrarDialogoNuevoAlumno,
-        child: const Icon(Icons.person_add, color: Colors.black),
+        child: const Icon(Icons.person_add, color: Colors.white),
       ),
     );
   }
