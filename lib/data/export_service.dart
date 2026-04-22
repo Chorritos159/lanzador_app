@@ -13,14 +13,12 @@ class ExportService {
     Map<int, List<Nota>> notasPorAlumno
   ) async {
     
-    // 1. Crear las cabeceras (Ej: Alumno, PC1, PC2)
     String contenido = "Alumno";
     for (var col in columnas) {
       contenido += ",${col.toUpperCase()}";
     }
     contenido += "\n";
     
-    // 2. Llenar los datos de cada estudiante
     for (var a in alumnos) {
       contenido += a.nombreCompleto;
       final notasDelAlumno = notasPorAlumno[a.id] ?? [];
@@ -37,7 +35,6 @@ class ExportService {
       contenido += "\n";
     }
 
-    // 3. Crear archivo y compartir
     final directorio = await getTemporaryDirectory();
     final nombreLimpio = seccion.nombre.replaceAll(' ', '_');
     final ruta = "${directorio.path}/Notas_$nombreLimpio.csv";

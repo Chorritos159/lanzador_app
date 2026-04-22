@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'presentation/screens/dashboard_screen.dart'; // Importamos tu nueva pantalla
+import 'presentation/screens/dashboard_screen.dart'; 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +19,7 @@ class LanzadorApp extends StatelessWidget {
         primaryColor: Colors.greenAccent,
         scaffoldBackgroundColor: const Color(0xFF121212),
       ),
-      home: const DashboardScreen(), // Aquí cargamos el Dashboard
+      home: const DashboardScreen(),
     );
   }
 }

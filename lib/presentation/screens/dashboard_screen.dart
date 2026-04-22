@@ -11,11 +11,10 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  // Variables de estado
   String _deporteSeleccionado = 'Fútbol';
   double _potencia = 5.0;
   String _estadoConexion = 'Esperando conexión Wi-Fi con el Lanzador...';
-  bool _estaCargando = false; // Para evitar que el profesor presione el botón 100 veces seguidas
+  bool _estaCargando = false; 
   IconData? _iconoEstado;
   Color _colorIconoEstado = const Color.fromARGB(255, 95, 103, 99);
 
@@ -27,7 +26,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _iconoEstado = null;
     });
     
-    // Aquí la app se pausa unos segundos esperando al ESP32
     bool exito = await LanzadorService.iniciarLanzamiento(_deporteSeleccionado, _potencia);
     
     setState(() {
@@ -67,7 +65,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  // --- INTERFAZ VISUAL ---
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +74,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: Colors.grey[900],
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          // Botón para ir a la gestión de alumnos
           IconButton(
             icon: const Icon(Icons.people, color: Colors.blueAccent),
             tooltip: 'Gestión de Aulas',
@@ -97,7 +93,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               const SizedBox(height: 10),
 
-              // --- LOGO INSTITUCIÓN ---
               Center(
                 child: Image.asset(
                   'assets/images/logoexitus.png',
@@ -108,7 +103,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // --- BOTONES DE DEPORTE ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -119,7 +113,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               
               const SizedBox(height: 40),
 
-              // --- SLIDER DE POTENCIA ---
               Card(
                 color: Colors.grey[900],
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -176,13 +169,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 30),
 
-              // --- PANTALLA DE ESTADO ---
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.black,
                   border: Border.all(
-                    // Si hay error se pone rojo, si está cargando naranja, si no verde
                     color: _estadoConexion.contains('Error') || _estadoConexion.contains('FALLO') 
                         ? Colors.redAccent 
                         : (_estaCargando ? Colors.orangeAccent : Colors.greenAccent)
@@ -218,13 +209,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 30),
 
-              // --- BOTÓN INICIAR LANZAMIENTO ---
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  // Desactivamos el botón si ya está enviando una petición
                   disabledBackgroundColor: Colors.blueAccent.withOpacity(0.5),
                 ),
                 onPressed: _estaCargando ? null : _ejecutarLanzamiento,
@@ -236,7 +225,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // --- BOTÓN PARADA DE EMERGENCIA ---
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,

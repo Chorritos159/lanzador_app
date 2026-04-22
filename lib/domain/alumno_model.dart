@@ -10,7 +10,7 @@ class Alumno {
       'id': id,
       'seccionId': seccionId,
       'nombreCompleto': nombreCompleto,
-    }; // ¡AQUÍ ESTABA EL ERROR! Ya no debe haber notaRendimiento
+    }; 
   }
 
   factory Alumno.fromMap(Map<String, dynamic> map) {

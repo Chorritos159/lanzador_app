@@ -20,7 +20,6 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     _cargarSecciones();
   }
 
-  // Leer la base de datos
   Future<void> _cargarSecciones() async {
     final seccionesBD = await DatabaseHelper.instance.getSecciones();
     setState(() {
@@ -28,7 +27,6 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     });
   }
 
-  // Insertar en la base de datos
   Future<void> _agregarSeccion() async {
     if (_nombreController.text.isEmpty) return;
     
@@ -36,11 +34,10 @@ class _SeccionesScreenState extends State<SeccionesScreen> {
     await DatabaseHelper.instance.insertSeccion(nuevaSeccion);
     
     _nombreController.clear();
-    Navigator.pop(context); // Cierra el modal
-    _cargarSecciones(); // Recarga la lista
+    Navigator.pop(context); 
+    _cargarSecciones(); 
   }
 
-  // Modal para escribir el nombre del aula
   void _mostrarDialogoNuevaSeccion() {
     showDialog(
       context: context,

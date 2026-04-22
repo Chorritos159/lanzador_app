@@ -51,7 +51,6 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     }
   }
 
-  // --- LÓGICA DE GUARDADO ---
   Future<void> _agregarAlumno() async {
     if (_nombreController.text.isEmpty || widget.seccion.id == null) return;
     
@@ -82,7 +81,6 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     _cargarAlumnos();
   }
 
-  // --- MODALES (INTERFAZ EMERGENTE) ---
   void _mostrarDialogoNuevoAlumno() {
     showDialog(
       context: context,
@@ -131,7 +129,7 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
               List<String> nombres = bulkController.text.split('\n');
               await DatabaseHelper.instance.insertarAlumnosMasivo(widget.seccion.id!, nombres);
               Navigator.pop(context);
-              _cargarAlumnos(); // Refresca la tabla automáticamente
+              _cargarAlumnos(); 
             },
             child: const Text('Importar Ahora', style: TextStyle(color: Colors.white)),
           ),
@@ -198,7 +196,6 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
     );
   }
 
-  // --- HELPER VISUAL ---
   Nota? _obtenerNota(List<Nota> notas, String columna) {
     for (var n in notas) {
       if (n.nombreEvaluacion == columna) return n;
@@ -216,13 +213,11 @@ class _AlumnosScreenState extends State<AlumnosScreen> {
         title: Text('Clase: ${widget.seccion.nombre}'),
         backgroundColor: Colors.grey[900],
         actions: [
-          // BOTÓN 1: Importación Masiva (Pegar Lista)
           IconButton(
             icon: const Icon(Icons.group_add, color: Colors.blueAccent),
             tooltip: 'Importar Lista de Alumnos',
             onPressed: _mostrarDialogoCargaMasiva,
           ),
-          // BOTÓN 2: Exportar a Excel / WhatsApp
           IconButton(
             icon: const Icon(Icons.share, color: Colors.greenAccent),
             tooltip: 'Exportar Notas',

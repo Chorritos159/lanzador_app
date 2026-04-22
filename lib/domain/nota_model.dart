@@ -1,7 +1,7 @@
 class Nota {
   final int? id;
   final int alumnoId;
-  final String nombreEvaluacion; // Ej. "Práctica 1"
+  final String nombreEvaluacion; 
   final double valor;
 
   Nota({this.id, required this.alumnoId, required this.nombreEvaluacion, required this.valor});

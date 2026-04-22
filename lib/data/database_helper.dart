@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../domain/seccion_model.dart';
 import '../domain/alumno_model.dart';
-import '../domain/nota_model.dart'; // Crearemos este archivo en el siguiente paso
+import '../domain/nota_model.dart'; 
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -12,7 +12,6 @@ class DatabaseHelper {
 
   Future<Database> get database async {
     if (_database != null) return _database!;
-    // CAMBIO IMPORTANTE: Renombramos la BD a v2 para que cree todo desde cero
     _database = await _initDB('lanzador_v2.db');
     return _database!;
   }
@@ -31,7 +30,6 @@ class DatabaseHelper {
     )
     ''');
 
-    // Alumno ya no tiene la nota aquí adentro
     await db.execute('''
     CREATE TABLE alumnos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +39,6 @@ class DatabaseHelper {
     )
     ''');
 
-    // NUEVA TABLA: Una tabla dedicada solo a las notas
     await db.execute('''
     CREATE TABLE notas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,7 +50,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // --- MÉTODOS DE SECCIONES ---
   Future<int> insertSeccion(Seccion seccion) async {
     final db = await instance.database;
     return await db.insert('secciones', seccion.toMap());
@@ -65,7 +61,6 @@ class DatabaseHelper {
     return result.map((json) => Seccion.fromMap(json)).toList();
   }
 
-  // --- MÉTODOS DE ALUMNOS ---
   Future<int> insertAlumno(Alumno alumno) async {
     final db = await instance.database;
     return await db.insert('alumnos', alumno.toMap());
@@ -77,7 +72,6 @@ class DatabaseHelper {
     return result.map((json) => Alumno.fromMap(json)).toList();
   }
 
-  // --- NUEVOS MÉTODOS DE NOTAS ---
   Future<int> insertNota(Nota nota) async {
     final db = await instance.database;
     return await db.insert('notas', nota.toMap());
